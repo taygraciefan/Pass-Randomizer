@@ -1,82 +1,220 @@
-import random
-import string
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Password Generator</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary-blue': '#1e40af',
+                        'secondary-blue': '#3b82f6',
+                        'dark-bg': '#1f2937',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom styles for aesthetic enhancements */
+        .shadow-custom {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .text-clip-gradient {
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            background-image: linear-gradient(to right, #3b82f6, #6366f1);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4 font-sans">
 
-def generate_password(length, char_set):
-    """
-    Generates a randomized password of the given length from the specified character set.
+    <!-- Main Container Card -->
+    <div class="bg-white p-6 md:p-10 rounded-xl shadow-2xl w-full max-w-lg transition duration-300 transform hover:scale-[1.01]">
+        
+        <!-- Header -->
+        <h1 class="text-3xl md:text-4xl font-extrabold text-center mb-6">
+            <span class="text-clip-gradient">Secure Password Generator</span>
+        </h1>
+        <p class="text-center text-gray-500 mb-8">
+            Define your complexity and generate a strong, random password.
+        </p>
 
-    Args:
-        length (int): The desired length of the password.
-        char_set (str): A string containing all characters allowed in the password.
+        <!-- Configuration Section -->
+        <div class="space-y-6">
 
-    Returns:
-        str: The generated randomized password.
-    """
-    if length <= 0 or not char_set:
-        return "Error: Password length must be positive and the character set cannot be empty."
+            <!-- 1. Password Length Input -->
+            <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                <label for="passwordLength" class="block text-lg font-semibold text-gray-700 mb-2">
+                    Password Length: <span id="lengthValue" class="text-secondary-blue font-bold">16</span>
+                </label>
+                <input type="range" id="passwordLength" min="4" max="64" value="16" 
+                       oninput="document.getElementById('lengthValue').innerText = this.value;"
+                       class="w-full h-2 bg-gray-300 rounded-lg appearance-none cursor-pointer range-lg transition duration-150 ease-in-out focus:ring-secondary-blue focus:ring-2">
+            </div>
 
-    # Use random.choice() to pick a character from the set for each position in the password
-    password = ''.join(random.choice(char_set) for _ in range(length))
-    return password
+            <!-- 2. Character Set Selection -->
+            <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                <p class="text-lg font-semibold text-gray-700 mb-3">Include Character Types:</p>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <!-- Checkbox Item -->
+                    <label class="flex items-center space-x-2 cursor-pointer p-2 bg-white rounded-md border hover:border-secondary-blue transition">
+                        <input type="checkbox" id="includeLowercase" checked class="form-checkbox h-5 w-5 text-primary-blue rounded focus:ring-primary-blue">
+                        <span class="text-gray-600 select-none">a-z (Lowercase)</span>
+                    </label>
 
-def get_user_char_set():
-    """
-    Prompts the user to select which types of characters to include and builds the set.
-    """
-    char_types = {
-        'Lowercase Letters (a-z)': string.ascii_lowercase,
-        'Uppercase Letters (A-Z)': string.ascii_uppercase,
-        'Numbers (0-9)': string.digits,
-        'Symbols (!@#$%, etc.)': string.punctuation
-    }
+                    <label class="flex items-center space-x-2 cursor-pointer p-2 bg-white rounded-md border hover:border-secondary-blue transition">
+                        <input type="checkbox" id="includeUppercase" checked class="form-checkbox h-5 w-5 text-primary-blue rounded focus:ring-primary-blue">
+                        <span class="text-gray-600 select-none">A-Z (Uppercase)</span>
+                    </label>
 
-    selected_chars = ""
-    print("\n--- Select Character Sets ---")
-    
-    for name, char_set in char_types.items():
-        while True:
-            # Prompt user and take the first character, convert to lowercase for comparison
-            choice = input(f"Include {name}? (y/n): ").strip().lower()
-            if choice in ['y', 'n']:
-                if choice == 'y':
-                    selected_chars += char_set
-                break
-            else:
-                print("Invalid input. Please enter 'y' for yes or 'n' for no.")
+                    <label class="flex items-center space-x-2 cursor-pointer p-2 bg-white rounded-md border hover:border-secondary-blue transition">
+                        <input type="checkbox" id="includeNumbers" checked class="form-checkbox h-5 w-5 text-primary-blue rounded focus:ring-primary-blue">
+                        <span class="text-gray-600 select-none">0-9 (Numbers)</span>
+                    </label>
 
-    return selected_chars
+                    <label class="flex items-center space-x-2 cursor-pointer p-2 bg-white rounded-md border hover:border-secondary-blue transition">
+                        <input type="checkbox" id="includeSymbols" class="form-checkbox h-5 w-5 text-primary-blue rounded focus:ring-primary-blue">
+                        <span class="text-gray-600 select-none">!@#$% (Symbols)</span>
+                    </label>
+                </div>
+            </div>
 
-def get_password_length():
-    """
-    Prompts the user for a valid password length.
-    """
-    while True:
-        try:
-            length = int(input("Enter desired password length (must be a positive number): "))
-            if length > 0:
-                return length
-            else:
-                print("Length must be a positive number.")
-        except ValueError:
-            print("Invalid input. Please enter an integer.")
+            <!-- Generate Button -->
+            <button onclick="generatePassword()" 
+                    class="w-full py-3 mt-4 text-white font-bold rounded-lg bg-primary-blue hover:bg-secondary-blue transition duration-300 transform hover:scale-[1.005] shadow-lg shadow-primary-blue/30 focus:outline-none focus:ring-4 focus:ring-primary-blue/50">
+                Generate Password
+            </button>
+            
+        </div>
 
-if __name__ == "__main__":
-    print("Welcome to the Customized Password Generator!")
+        <hr class="my-8 border-gray-200">
 
-    # 1. Get length
-    password_length = get_password_length()
+        <!-- 3. Output Section -->
+        <div class="space-y-4">
+            <h2 class="text-xl font-bold text-gray-700">Your Secure Password:</h2>
+            
+            <div id="passwordOutputContainer" class="relative">
+                <input type="text" id="passwordOutput" readonly value="Click 'Generate' to create one."
+                       class="w-full p-4 pr-16 text-lg font-mono bg-gray-100 border border-gray-300 rounded-lg text-gray-800 focus:outline-none transition duration-150"
+                       aria-live="polite">
+                
+                <!-- Copy Button -->
+                <button onclick="copyPassword()" id="copyButton" 
+                        class="absolute right-2 top-1/2 transform -translate-y-1/2 p-2 bg-gray-200 rounded-md text-gray-600 hover:bg-secondary-blue hover:text-white transition duration-200 focus:outline-none focus:ring-2 focus:ring-secondary-blue/50"
+                        title="Copy to Clipboard">
+                    <!-- Icon: Clipboard -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-copy">
+                        <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
+                        <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+                    </svg>
+                </button>
+            </div>
+            
+            <!-- Message/Error Box -->
+            <p id="messageBox" class="text-sm text-red-500 min-h-[1.5rem]"></p>
+        </div>
+    </div>
 
-    # 2. Get character set
-    all_chars = get_user_char_set()
+    <script>
+        // Define character sets
+        const CHAR_SETS = {
+            lowercase: 'abcdefghijklmnopqrstuvwxyz',
+            uppercase: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+            numbers: '0123456789',
+            symbols: '!@#$%^&*()_+-=[]{}|;:,.<>?/~',
+        };
 
-    # 3. Check if any characters were selected
-    if not all_chars:
-        print("\nError: You must select at least one character type to generate a password.")
-    else:
-        # 4. Generate and print the password
-        final_password = generate_password(password_length, all_chars)
-        print("\n--- Generated Password ---")
-        print(f"Length: {password_length}")
-        print(f"Characters Used: {len(all_chars)} unique characters.")
-        print(f"Password: {final_password}")
-        print("--------------------------")
+        const passwordLengthInput = document.getElementById('passwordLength');
+        const passwordOutput = document.getElementById('passwordOutput');
+        const messageBox = document.getElementById('messageBox');
+        const copyButton = document.getElementById('copyButton');
+
+        /**
+         * Collects the desired character set based on user checkbox selections.
+         * @returns {string} A string containing all allowed characters.
+         */
+        function getCharacterSet() {
+            let characterSet = "";
+            if (document.getElementById('includeLowercase').checked) {
+                characterSet += CHAR_SETS.lowercase;
+            }
+            if (document.getElementById('includeUppercase').checked) {
+                characterSet += CHAR_SETS.uppercase;
+            }
+            if (document.getElementById('includeNumbers').checked) {
+                characterSet += CHAR_SETS.numbers;
+            }
+            if (document.getElementById('includeSymbols').checked) {
+                characterSet += CHAR_SETS.symbols;
+            }
+            return characterSet;
+        }
+
+        /**
+         * Generates the randomized password.
+         */
+        function generatePassword() {
+            messageBox.textContent = ""; // Clear previous messages
+            passwordOutput.value = ""; 
+
+            const length = parseInt(passwordLengthInput.value, 10);
+            const charSet = getCharacterSet();
+
+            if (!charSet) {
+                messageBox.textContent = "Error: You must select at least one character type.";
+                passwordOutput.value = "Selection Required";
+                return;
+            }
+
+            let password = '';
+            for (let i = 0; i < length; i++) {
+                // Select a random index from the character set string
+                const randomIndex = Math.floor(Math.random() * charSet.length);
+                password += charSet[randomIndex];
+            }
+
+            passwordOutput.value = password;
+        }
+
+        /**
+         * Copies the generated password to the clipboard.
+         */
+        function copyPassword() {
+            passwordOutput.select();
+            passwordOutput.setSelectionRange(0, 99999); // For mobile devices
+
+            try {
+                // Use document.execCommand('copy') for better compatibility in iframe environments
+                document.execCommand('copy');
+                messageBox.textContent = "Password copied to clipboard!";
+                messageBox.classList.remove('text-red-500');
+                messageBox.classList.add('text-secondary-blue');
+                
+                // Reset message after a short delay
+                setTimeout(() => {
+                    messageBox.textContent = "";
+                    messageBox.classList.remove('text-secondary-blue');
+                    messageBox.classList.add('text-red-500');
+                }, 2000);
+
+            } catch (err) {
+                messageBox.textContent = "Copying failed. Please copy manually.";
+            }
+        }
+
+        // Initialize the generator by setting an initial password
+        document.addEventListener('DOMContentLoaded', generatePassword);
+
+    </script>
+</body>
+</html>
