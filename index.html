@@ -1,0 +1,82 @@
+import random
+import string
+
+def generate_password(length, char_set):
+    """
+    Generates a randomized password of the given length from the specified character set.
+
+    Args:
+        length (int): The desired length of the password.
+        char_set (str): A string containing all characters allowed in the password.
+
+    Returns:
+        str: The generated randomized password.
+    """
+    if length <= 0 or not char_set:
+        return "Error: Password length must be positive and the character set cannot be empty."
+
+    # Use random.choice() to pick a character from the set for each position in the password
+    password = ''.join(random.choice(char_set) for _ in range(length))
+    return password
+
+def get_user_char_set():
+    """
+    Prompts the user to select which types of characters to include and builds the set.
+    """
+    char_types = {
+        'Lowercase Letters (a-z)': string.ascii_lowercase,
+        'Uppercase Letters (A-Z)': string.ascii_uppercase,
+        'Numbers (0-9)': string.digits,
+        'Symbols (!@#$%, etc.)': string.punctuation
+    }
+
+    selected_chars = ""
+    print("\n--- Select Character Sets ---")
+    
+    for name, char_set in char_types.items():
+        while True:
+            # Prompt user and take the first character, convert to lowercase for comparison
+            choice = input(f"Include {name}? (y/n): ").strip().lower()
+            if choice in ['y', 'n']:
+                if choice == 'y':
+                    selected_chars += char_set
+                break
+            else:
+                print("Invalid input. Please enter 'y' for yes or 'n' for no.")
+
+    return selected_chars
+
+def get_password_length():
+    """
+    Prompts the user for a valid password length.
+    """
+    while True:
+        try:
+            length = int(input("Enter desired password length (must be a positive number): "))
+            if length > 0:
+                return length
+            else:
+                print("Length must be a positive number.")
+        except ValueError:
+            print("Invalid input. Please enter an integer.")
+
+if __name__ == "__main__":
+    print("Welcome to the Customized Password Generator!")
+
+    # 1. Get length
+    password_length = get_password_length()
+
+    # 2. Get character set
+    all_chars = get_user_char_set()
+
+    # 3. Check if any characters were selected
+    if not all_chars:
+        print("\nError: You must select at least one character type to generate a password.")
+    else:
+        # 4. Generate and print the password
+        final_password = generate_password(password_length, all_chars)
+        print("\n--- Generated Password ---")
+        print(f"Length: {password_length}")
+        print(f"Characters Used: {len(all_chars)} unique characters.")
+        print(f"Password: {final_password}")
+        print("--------------------------")
